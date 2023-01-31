@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Question : MonoBehaviour
+//Needed to be autoserializable by Unity
+[Serializable]
+public class Question
 {
     public string category;
     public string type;
