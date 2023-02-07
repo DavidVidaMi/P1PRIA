@@ -20,24 +20,37 @@ public class GameManager : MonoBehaviour
             // Request and wait for the desired page.
             yield return webRequest.SendWebRequest();
 
-            string[] pages = uri.Split('/');
-            int page = pages.Length - 1;
-
+            // Gives feedback.
             switch (webRequest.result)
             {
                 case UnityWebRequest.Result.ConnectionError:
-                    Debug.LogError(pages[page] + ": ConnectionError ");
+                    Debug.LogError("ConnectionError ");
                     break;
                 case UnityWebRequest.Result.DataProcessingError:
-                    Debug.LogError(pages[page] + ": Error: " + webRequest.error);
+                    Debug.LogError("Error: " + webRequest.error);
                     break;
                 case UnityWebRequest.Result.ProtocolError:
-                    Debug.LogError(pages[page] + ": HTTP Error: " + webRequest.error);
+                    Debug.LogError("HTTP Error: " + webRequest.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                    Debug.Log("Received\n");
+                    ParseJSON(webRequest.downloadHandler.text);
                     break;
             }
+        }
+    }
+
+
+    private void ParseJSON(string JSONString)
+    {
+        Response response = JsonUtility.FromJson<Response>(JSONString);
+        if(response.response_code == "0")
+        {
+            Debug.Log("Numero de preguntas : "+ response.results.Count);
+            Debug.Log("Categoría da pregunta 1 : "+ response.results[0].category);
+            Debug.Log("Tipo da pregunta 1 : "+ response.results[0].type);
+            Debug.Log("Dificultad da pregunta 1 : "+ response.results[0].difficulty);
+            Debug.Log("Pregunta 1 : "+ response.results[0].question);
         }
     }
 }
