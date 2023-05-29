@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject questionNumberText;
+    public GameObject questionText;
+    public List<GameObject> answerButtons;
+
+    private Response response;
+    private int round = 0;
     void Start()
     {
         //Start a coroutine to call the API
         StartCoroutine(GetRequest("https://opentdb.com/api.php?amount=10"));
-        
     }
 
     IEnumerator GetRequest(string uri)
@@ -33,17 +40,34 @@ public class GameManager : MonoBehaviour
                     Debug.LogError("HTTP Error: " + webRequest.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    Debug.Log("Received\n");
                     ParseJSON(webRequest.downloadHandler.text);
                     break;
             }
         }
     }
 
+    public void StartGame()
+    {
+        round = 0;
+        NextRound();
+    }
+
+    public void NextRound()
+    {
+        questionText.GetComponent<TMP_Text>().text = response.results[round].question;
+        answerButtons[0].transform.GetChild(0).GetComponent<TMP_Text>().text = response.results[round].correct_answer;
+        answerButtons[1].transform.GetChild(0).GetComponent<TMP_Text>().text = response.results[round].incorrect_answers[0];
+        answerButtons[2].transform.GetChild(0).GetComponent<TMP_Text>().text = response.results[round].incorrect_answers[1];
+        answerButtons[3].transform.GetChild(0).GetComponent<TMP_Text>().text = response.results[round].incorrect_answers[2];
+        round++;
+        questionNumberText.GetComponent<TMP_Text>().text = "Question number "+round+":";
+        
+    }
+
 
     private void ParseJSON(string JSONString)
     {
-        Response response = JsonUtility.FromJson<Response>(JSONString);
+        response = JsonUtility.FromJson<Response>(JSONString);
         if(response.response_code == "0")
         {
             Debug.Log("Numero de preguntas : "+ response.results.Count);
