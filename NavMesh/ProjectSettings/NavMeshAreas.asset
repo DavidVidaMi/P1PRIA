@@ -13,8 +13,8 @@ NavMeshProjectSettings:
     cost: 2
   - name: SmolWalkable
     cost: 1
-  - name: 
-    cost: 1
+  - name: DificultTerrain
+    cost: 2
   - name: 
     cost: 1
   - name: 
