@@ -11,9 +11,13 @@ public class Patrol : MonoBehaviour
     private int destPoint = 0;
     private NavMeshAgent agent;
 
+    private PlayerState state;
+    private Animator animator;
+
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
 
         // Disabling auto-braking allows for continuous movement
@@ -39,6 +43,16 @@ public class Patrol : MonoBehaviour
         destPoint = (destPoint + 1) % points.Length;
     }
 
+    IEnumerator Idle()
+    {
+        for (float alpha = 1f; alpha >= 0; alpha -= 0.1f)
+        {
+            c.a = alpha;
+            GetComponent<Renderer>().material.color = c;
+            yield return new WaitForSeconds(.1f);
+        }
+    }
+
 
     void Update()
     {
@@ -46,5 +60,11 @@ public class Patrol : MonoBehaviour
         // close to the current one.
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
             GotoNextPoint();
+    }
+
+    public enum PlayerState
+    {
+        Idle,
+        Patrol
     }
 }
